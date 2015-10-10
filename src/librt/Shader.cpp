@@ -69,7 +69,16 @@ RGBR_f Shader::Lambertian(Intersection *pIntersection, STVector3 *lightDirection
     //---------------------------------------------------------
 
     //---------------------------------------------------------
-
+    STVector3 normal,directionOfLight;
+    double albedo = 0.3;
+    double result;
+    normal = pIntersection -> normal;
+    normal.Normalize();
+    directionOfLight = *lightDirection;
+    directionOfLight.Normalize();
+    result = albedo * normal.Dot(normal, directionOfLight);
+    //color.r = r * result;
+    
     return(color);
 }
 

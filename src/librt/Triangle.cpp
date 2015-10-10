@@ -35,7 +35,7 @@ Triangle::~Triangle()
 //-----------------------------------------------------------------
 bool Triangle::IntersectionSolver(Ray ray, STVector3 A, STVector3 B, STVector3 C, double u, double v, double w)
 {
-    LinearSolver L;
+    
     bool bFoundSolution = false;
     
     // TO DO: Proj2 raytracer
@@ -46,6 +46,8 @@ bool Triangle::IntersectionSolver(Ray ray, STVector3 A, STVector3 B, STVector3 C
     //------------------------------------------------
 
     //------------------------------------------------------
+
+    
 
     return(bFoundSolution);
 }
@@ -73,6 +75,26 @@ bool Triangle::FindIntersection (Ray ray, Intersection *pIntersection)
     //------------------------------------------------
 
     //------------------------------------------------------
+    LinearSolver L;
+    STVector3 origin = ray.Origin();
+    STVector3 direction = ray.Direction();
+    STVector3 distance_AtoB = m_a - m_b;
+    STVector3 distance_Atoc = m_a - m_c;
+    STVector3 distance_origintoA = origin - m_a;
+    STVector3 point,normal;
+    double u,v,w = 0;
+    bFound = L.Run(distance_AtoB.x, distance_Atoc.x, direction.x, distance_origintoA.x, distance_AtoB.y, distance_Atoc.y, direction.y, distance_origintoA.y, distance_AtoB.z, distance_Atoc.z, direction.z, distance_origintoA.z, u, v, w);
+    if (bFound)
+    {
+        point = origin + w * direction;
+        normal = normal.Cross(distance_AtoB, distance_Atoc);
+        pIntersection -> normal = normal;
+        pIntersection -> point = point;
+        pIntersection -> distanceSqu = normal.Dot( point - origin, point - origin);
+        pIntersection -> surface = this;
+        
+    }
+    
 
     return(bFound);
 }
@@ -91,7 +113,9 @@ STVector3 Triangle::ComputeNormalVector(void)
     //------------------------------------------------
 
     //---------------------------------------------------
-
+    STVector3 distance_AtoB = m_a - m_b;
+    STVector3 distance_Atoc = m_a - m_c;
+    normal = normal.Cross(distance_AtoB, distance_Atoc);
     return(normal);
 }
 

@@ -71,7 +71,17 @@ STVector3 Scene::GetLightDirection(void)
     // 1. Return the direction of the light in the scene
     //---------------------------------------------------------
     //---------------------------------------------------------
-
+    Intersection intersection;
+    Surface *tempSurface;
+    tempSurface = m_surfaceList.back();
+    tempSurface -> FindClosestIntersection(&intersection);
+    STVector3 point = intersection.point;
+    m_surfaceList.pop_back();
+    Light light = m_lights.back();
+    STVector3 lightPosition = light.GetPosition();
+    m_lights.pop_back();
+    lightDirection = lightPosition - point;
+    
     return(lightDirection);
 }
 
@@ -90,6 +100,27 @@ int Scene::SelectClosest(IntersectionList *pIntersectionList, Intersection *pInt
     //---------------------------------------------------------
 
     //---------------------------------------------------------
+
+    int iter = 0;
+    double tempDistance = 0.0;
+    //int numOftimes = 0;
+    tempDistance = pIntersectionList -> at(0).distanceSqu;
+    for(iter = 0; iter != pIntersectionList -> size(); iter++)
+    {
+        if (tempDistance > pIntersectionList -> at(iter).distanceSqu)
+        {
+            tempDistance = pIntersectionList -> at(iter).distanceSqu;
+            numPoints = 1;
+            pIntersection -> point = pIntersectionList -> at(iter).point;
+            pIntersection -> normal = pIntersectionList -> at(iter).normal;
+            // pIntersection -> surface = m_intersections.at(iter).this;
+        }
+        else
+            if (tempDistance == pIntersectionList -> at(iter).distanceSqu)
+            {
+                numPoints++;
+            }
+    }
 
     return(numPoints);
 }
@@ -135,7 +166,17 @@ int Scene::FindIntersection(Ray ray, Intersection *pIntersection, bool bAny)
         //    Do not forget to update the pIntersection before returning
         // 3. Othersize just add to the list of intersections
         //---------------------------------------------------------
-
+        if (bAny)
+        {
+            for(iter = m_surfaceList.begin(); iter != end; iter++)
+            {
+                
+            }
+        }
+        else
+        {
+            
+        }
     }
 
     // TO DO: Proj2 raytracer
