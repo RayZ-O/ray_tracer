@@ -7,7 +7,7 @@
 #ifndef _SURFACE_H
 #define _SURFACE_H
 
-
+#include <algorithm>
 #include "STVector3.h"
 #include "Ray.h"
 #include "Intersection.h"
@@ -23,11 +23,11 @@ class Surface
                                     Surface                             (void);
                                     ~Surface                            (void);
 
-    virtual bool                    FindIntersection                     (Ray ray, Intersection *pIntersection){ return(false);} 
+    virtual bool                    FindIntersection                    (Ray ray, Intersection *pIntersection){ return(false);}
     int                             FindClosestIntersection             (Intersection *pIntersection);
 
 protected:
-    
+
 
 
     // TO DO: Proj2 raytracer
@@ -41,7 +41,6 @@ protected:
 
 
 };
-
 
 #endif //_SURFACE_H
 

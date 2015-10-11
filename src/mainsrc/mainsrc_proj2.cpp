@@ -182,7 +182,7 @@ void MouseCallback(int button, int state, int x, int y)
     {
         gMouseButton = -1;
     }
-    
+
     if (state == GLUT_UP)
     {
         gPreviousMouseX = -1;
@@ -203,7 +203,7 @@ void MouseMotionCallback(int x, int y)
         float deltaY = y-gPreviousMouseY;
         gPreviousMouseX = x;
         gPreviousMouseY = y;
-        
+
         //orbit, strafe, or zoom
         if (gMouseButton == GLUT_LEFT_BUTTON)
         {
@@ -217,13 +217,13 @@ void MouseMotionCallback(int x, int y)
         {
             pScene->GetCamera()->Zoom(deltaY);
         }
-        
+
     } else
     {
         gPreviousMouseX = x;
         gPreviousMouseY = y;
     }
-    
+
 }
 
 
@@ -235,7 +235,7 @@ void MouseMotionCallback(int x, int y)
 // logic of your rendering program.
 // No command line inputs are necessary.
 //-----------------------------------------------
-int main(int argc, char** argv)
+int main(int argc, char *argv[])
 {
 
     // TO DO: Proj2 raytracer
@@ -243,7 +243,21 @@ int main(int argc, char** argv)
     // 1. Add a commandline parameter for the render mode
     // 2. Remove the global variable
     //------------------------------------------------
-        mode = LAMBERTIAN;
+    if (argc != 2) {
+        std::cout << "Usage: ./prog2_raytracer [render mode]\nrender mode:\n0 LAMBERTIAN\n1 PHONG\n";
+        exit(1);
+    }
+    switch(atoi(argv[1])) {
+        case 0:
+            mode = LAMBERTIAN;
+            break;
+        case 1:
+            mode = PHONG;
+            break;
+
+    }
+
+
     //------------------------------------------------
 
     // Initializes the scene

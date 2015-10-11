@@ -29,7 +29,7 @@ Sphere::~Sphere()
 // if it an intersection exist, return true; otherwise false
 // return the intersection point information in pIntersection
 //-----------------------------------------------------------------------------
-bool Sphere::FindIntersection(Ray ray, Intersection *pIntersection) 
+bool Sphere::FindIntersection(Ray ray, Intersection *pIntersection)
 {
 
     bool bFound = false;
@@ -37,7 +37,7 @@ bool Sphere::FindIntersection(Ray ray, Intersection *pIntersection)
     // TO DO: Proj2 raytracer
     // CAP5705 - Find Intersections.
     // 1. Find intersections with this object along the Ray ray
-    // 2. Store the results of the intersection 
+    // 2. Store the results of the intersection
     // 3. if found and return true, otherwise, return false
     // NOTE: The IntersectionPoint pIntersection should store:
     // hit point, surface normal, the time t of the ray at the hit point
@@ -55,11 +55,13 @@ bool Sphere::FindIntersection(Ray ray, Intersection *pIntersection)
     double distance1;
     STVector3 point1;
     STVector3 normal1;
-    float delta = result.Dot(direction, Distance_EtoC) * result.Dot(direction, Distance_EtoC) - result.Dot(direction, direction) * (result.Dot(Distance_EtoC, Distance_EtoC) - m_radius * m_radius);
+    float delta = result.Dot(direction, Distance_EtoC) * result.Dot(direction, Distance_EtoC) -
+                  result.Dot(direction, direction) * (result.Dot(Distance_EtoC, Distance_EtoC) - m_radius * m_radius);
     if (delta < 0)
         return (bFound);
     else
-        if ( delta == 0)
+    {
+        if (delta == 0)
         {
             t1 = result.Dot(-direction, Distance_EtoC) / result.Dot(direction,direction);
             point1 = origin + t1 * direction;
@@ -87,8 +89,8 @@ bool Sphere::FindIntersection(Ray ray, Intersection *pIntersection)
             pIntersection -> surface = this;
             bFound = true;
         }
-
-
+        m_intersections.push_back(*pIntersection);
+    }
    return(bFound);
 }
 

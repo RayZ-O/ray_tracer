@@ -1,16 +1,13 @@
 //----------------------------------------------------------------
 // Triangle.cpp
 // Copyright: Corey Toler-Franklin, University of Florida
-// 
+//
 // Triangle surface class
 // This class is represented by the surface enclosed by 3 points:m_a, m_b, m_c
 //----------------------------------------------------------------
 #include "Triangle.h"
 #include "LinearSolver.h"
 #include "defs.h"
-
-
-
 // contructor
 Triangle::Triangle(void)
         : Surface()
@@ -35,9 +32,7 @@ Triangle::~Triangle()
 //-----------------------------------------------------------------
 bool Triangle::IntersectionSolver(Ray ray, STVector3 A, STVector3 B, STVector3 C, double u, double v, double w)
 {
-    
     bool bFoundSolution = false;
-    
     // TO DO: Proj2 raytracer
     // CAP5705 - Solve for intersections.
     // 1. Use barycentric coordinates and linear equations to solve for intersections
@@ -46,9 +41,16 @@ bool Triangle::IntersectionSolver(Ray ray, STVector3 A, STVector3 B, STVector3 C
     //------------------------------------------------
 
     //------------------------------------------------------
-
-    
-
+    LinearSolver L;
+    STVector3 origin = ray.Origin();
+    STVector3 direction = ray.Direction();
+    STVector3 distance_AtoB = A - B;
+    STVector3 distance_Atoc = A - C;
+    STVector3 distance_origintoA = origin - A;
+    bFoundSolution = L.Run(distance_AtoB.x, distance_Atoc.x, direction.x,
+                          distance_origintoA.x, distance_AtoB.y, distance_Atoc.y,
+                          direction.y, distance_origintoA.y, distance_AtoB.z, distance_Atoc.z,
+                          direction.z, distance_origintoA.z, u, v, w);
     return(bFoundSolution);
 }
 
@@ -67,7 +69,7 @@ bool Triangle::FindIntersection (Ray ray, Intersection *pIntersection)
     // CAP5705 - Find Intersections.
     // 1. Find intersections with this object along the Ray ray
     //    Use barycentric coordinates and linear equations
-    // 2. Store the results of the intersection 
+    // 2. Store the results of the intersection
     // 3. If found return true, otherwise, return false
     // NOTE: The Intersection pIntersection should store:
     // hit point, surface normal, the time t of the ray at the hit point
@@ -75,26 +77,20 @@ bool Triangle::FindIntersection (Ray ray, Intersection *pIntersection)
     //------------------------------------------------
 
     //------------------------------------------------------
-    LinearSolver L;
     STVector3 origin = ray.Origin();
     STVector3 direction = ray.Direction();
-    STVector3 distance_AtoB = m_a - m_b;
-    STVector3 distance_Atoc = m_a - m_c;
-    STVector3 distance_origintoA = origin - m_a;
-    STVector3 point,normal;
-    double u,v,w = 0;
-    bFound = L.Run(distance_AtoB.x, distance_Atoc.x, direction.x, distance_origintoA.x, distance_AtoB.y, distance_Atoc.y, direction.y, distance_origintoA.y, distance_AtoB.z, distance_Atoc.z, direction.z, distance_origintoA.z, u, v, w);
+    double u,v,w = 0.0;
+    bFound = IntersectionSolver(ray, m_a, m_b, m_c, u, v, w);
     if (bFound)
     {
-        point = origin + w * direction;
-        normal = normal.Cross(distance_AtoB, distance_Atoc);
+        STVector3 point = origin + w * direction;
+        STVector3 normal = normal.Cross(m_a - m_b, m_a - m_c);
         pIntersection -> normal = normal;
         pIntersection -> point = point;
-        pIntersection -> distanceSqu = normal.Dot( point - origin, point - origin);
+        pIntersection -> distanceSqu = normal.Dot(point - origin, point - origin);
         pIntersection -> surface = this;
-        
+        m_intersections.push_back(*pIntersection);
     }
-    
 
     return(bFound);
 }
@@ -104,7 +100,7 @@ bool Triangle::FindIntersection (Ray ray, Intersection *pIntersection)
 //-------------------------------------------------
 STVector3 Triangle::ComputeNormalVector(void)
 {
-    STVector3 normal(0,0,1);
+    STVector3 normal;
 
     // TO DO: Proj2 raytracer
     // CAP5705 - Compute the surface normal.
@@ -125,6 +121,6 @@ STVector3 Triangle::ComputeNormalVector(void)
 // 1. Add any object specific properties you need
 //    to create your special effects (e.g. specularity, transparency...)
 // 2. Remember to declare these in your .h file
-// 
+//
 //---------------------------------------------------------
 //---------------------------------------------------------

@@ -26,7 +26,7 @@ void Shader::SetMode(RenderMode mode)
 
 
 // Runs the shader according to the specified render mode
-RGBR_f Shader::Run(Intersection *pIntersection, STVector3 *lightDirection)
+RGBR_f Shader::Run(Camera *camera, Intersection *pIntersection, STVector3 *lightDirection)
 {
     RGBR_f color;
 
@@ -35,7 +35,7 @@ RGBR_f Shader::Run(Intersection *pIntersection, STVector3 *lightDirection)
             color = Lambertian(pIntersection, lightDirection);
             break;
         case PHONG:
-            color = Phong(pIntersection, lightDirection);
+            color = Phong(camera, pIntersection, lightDirection);
             break;
         default:
             color = Lambertian(pIntersection, lightDirection);
@@ -59,7 +59,7 @@ RGBR_f Shader::Lambertian(Intersection *pIntersection, STVector3 *lightDirection
     assert(pIntersection);
     assert(lightDirection);
 
-    RGBR_f color;
+    RGBR_f color(0.5f, 0.5f, 0.0f, 0.7f);
 
     // TO DO: Proj2 raytracer
     // CAP5705 - Add shading lambertian shading.
@@ -69,36 +69,54 @@ RGBR_f Shader::Lambertian(Intersection *pIntersection, STVector3 *lightDirection
     //---------------------------------------------------------
 
     //---------------------------------------------------------
-    STVector3 normal,directionOfLight;
-    double albedo = 0.3;
-    double result;
-    normal = pIntersection -> normal;
+    STVector3 normal = pIntersection->normal;
     normal.Normalize();
-    directionOfLight = *lightDirection;
+    STVector3 directionOfLight = *lightDirection;
     directionOfLight.Normalize();
-    result = albedo * normal.Dot(normal, directionOfLight);
-    //color.r = r * result;
-    
+    double Kd = 0.3;
+    double factor = Kd * STVector3::Dot(normal, directionOfLight);
+    color.r *= factor;
+    color.g *= factor;
+    color.b *= factor;
     return(color);
 }
 
 
 // Implements diffuse shading using the lambertian lighting model
-RGBR_f Shader::Phong(Intersection *pIntersection, STVector3 *lightDirection)
+RGBR_f Shader::Phong(Camera *camera, Intersection *pIntersection, STVector3 *lightDirection)
 {
 
     assert(pIntersection);
     assert(lightDirection);
 
-    RGBR_f color;
+    RGBR_f color(0.5f, 0.5f, 0.0f, 0.7f);
 
     // TO DO: Proj2 raytracer
     // CAP5705 - Add Phong shading.
     // 1. Implement the phong shading equation here
-    // 2. Remember to add any attributes you might need for shading to 
+    // 2. Remember to add any attributes you might need for shading to
     //    your surface objects as they are passed in with the pIntersection
     //---------------------------------------------------------
     //---------------------------------------------------------
+    STVector3 normal = pIntersection->normal;
+    normal.Normalize();
+    STVector3 directionOfLight = *lightDirection;
+    directionOfLight.Normalize();
+    double Kd = 0.3;
+    double diffuse = Kd * STVector3::Dot(normal, directionOfLight);
+
+    STVector3 directionOfView = camera->Position() - pIntersection->point; //Eye direction
+    directionOfView.Normalize();
+    STVector3 directionOfReflect = (STVector3::Dot(normal,(STVector3::Dot(normal, directionOfLight))) * 2.0f)
+                                 - directionOfLight;                   //calculate reflect
+    directionOfReflect.Normalize();
+
+    double Ks = 0.7;
+    double specular= Ks * pow(STVector3::Dot(directionOfView, directionOfReflect), 10);
+
+    color.r *= diffuse * specular;
+    color.g *= diffuse * specular;
+    color.b *= diffuse * specular;
 
     return(color);
 }

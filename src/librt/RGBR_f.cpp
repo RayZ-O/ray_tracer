@@ -3,7 +3,7 @@
 // RGBR_f.cpp
 // Color data
 // 10 February 2006
-// Copyright 
+// Copyright
 // RGBR_f.cpp
 //-----------------------------------------------------------------
 
@@ -11,7 +11,7 @@
 
 
 RGBR_f::RGBR_f (void)
-    : r		(10),
+    : r		(0),
       g		(0),
       b		(0),
       a	    (0)

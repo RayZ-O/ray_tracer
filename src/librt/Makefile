@@ -10,7 +10,7 @@ LIBPREFIX	 := lib
 STATIC_LIBSUFFIX := .a
 SHARED_LIBSUFFIX := .so
 
-CFLAGS 		 := -g
+CFLAGS 		 := -g -std=c++11
 LDFLAGS		 :=
 
 ###########################################################

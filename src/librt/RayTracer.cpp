@@ -29,16 +29,13 @@ RayTracer::~RayTracer()
 }
 
 
-
-
-
 //------------------------------------------------
 // Main raytracing algorithm
 // Cast Ray, Compute Intersections, Shade pixel
 //-----------------------------------------------
 void RayTracer::Run(Scene *pScene, std::string fName, RenderMode mode)
 {
-    // begin 
+    // begin
     std::cout << "Running... " << std::endl;
 
     // the color redult from shading
@@ -66,6 +63,7 @@ void RayTracer::Run(Scene *pScene, std::string fName, RenderMode mode)
     // NOTE: STImage stores colors in pixels in the range 0-255
     // If you compute color channels in a range 0-1 you must convert
     //------------------------------------------------
+
 
     ///-----------------------------------------------
 
@@ -113,7 +111,7 @@ bool RayTracer::MinimumColor(RGBR_f color)
         return(true);
     }
 
-   
+
     return(false);
 }
 

@@ -35,29 +35,22 @@ int Surface::FindClosestIntersection(Intersection *pIntersection)
     //    and the pIntersection is updated with the closest intersection
     //------------------------------------------------
     //------------------------------------------------
-    
-    int iter = 0;
-    double tempDistance = 0.0;
-    int numOftimes = 0;
-    tempDistance = m_intersections.at(0).distanceSqu;
-    for(iter = 0; iter != m_intersections.max_size(); iter++)
-    {
-        if (tempDistance > m_intersections.at(iter).distanceSqu)
-        {
-            tempDistance = m_intersections.at(iter).distanceSqu;
-            numOftimes = 1;
-            pIntersection -> point = m_intersections.at(iter).point;
-            pIntersection -> normal = m_intersections.at(iter).normal;
-           // pIntersection -> surface = m_intersections.at(iter).this;
-        }
-        else
-            if (tempDistance == m_intersections.at(iter).distanceSqu)
-            {
-                numOftimes++;
-            }
-    }
-    return numOftimes;
 
-    return(0);
+    if (m_intersections.empty()) {
+        return 0;
+    } else {
+        pIntersection = &m_intersections[0];
+        double min = m_intersections[0].distanceSqu;
+        int closeNumber = 0;
+        for (auto ins : m_intersections) {
+            if (ins.distanceSqu < min) {
+                pIntersection = &ins;
+            }
+            if (abs(ins.distanceSqu - min) < EPSILON) {
+                closeNumber++;
+            }
+        }
+        return closeNumber;  // TO DO number of close intersection
+    }
 }
 
