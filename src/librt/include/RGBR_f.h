@@ -20,7 +20,15 @@ public:
     RGBR_f(void);
     RGBR_f(float red, float green, float blue, float alpha);
     ~RGBR_f(void);
-    
+    RGBR_f operator += (const RGBR_f& rhs)
+    {
+        r += rhs.r;
+        g += rhs.g;
+        b += rhs.b;
+        a += rhs.a;
+        return *this;
+    }
+
     float r;
     float g;
     float b;

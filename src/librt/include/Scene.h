@@ -30,7 +30,7 @@ public:
 
 
     Camera                      *GetCamera                                  (void);
-    STVector3                    GetLightDirection                          (void);
+    STVector3                    GetLightDirection                          (Intersection *pIntersection);
 
     int                         FindIntersection                            (Ray ray, Intersection *pIntersection, bool bAny);
     int                         FindClosestIntersection                     (Ray ray, Intersection *pIntersection);

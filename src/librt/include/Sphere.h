@@ -15,7 +15,7 @@
 #include "Intersection.h"
 
 
-class Sphere  : public Surface 
+class Sphere  : public Surface
 {
 
 public:

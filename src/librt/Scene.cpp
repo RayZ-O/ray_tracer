@@ -62,7 +62,7 @@ Camera *Scene::GetCamera(void)
 
 // computes the direction of the light in the scene
 // and returns it
-STVector3 Scene::GetLightDirection(void)
+STVector3 Scene::GetLightDirection(Intersection *pIntersection)
 {
     STVector3 lightDirection;
 
@@ -71,17 +71,10 @@ STVector3 Scene::GetLightDirection(void)
     // 1. Return the direction of the light in the scene
     //---------------------------------------------------------
     //---------------------------------------------------------
-    Intersection intersection;
-    Surface *tempSurface;
-    tempSurface = m_surfaceList.back();
-    tempSurface -> FindClosestIntersection(&intersection);
-    STVector3 point = intersection.point;
-    m_surfaceList.pop_back();
+    STVector3 point = pIntersection->point;
     Light light = m_lights.back();
     STVector3 lightPosition = light.GetPosition();
-    m_lights.pop_back();
     lightDirection = lightPosition - point;
-
     return(lightDirection);
 }
 

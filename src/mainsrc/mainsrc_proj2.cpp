@@ -85,6 +85,11 @@ void Setup(void)
     // 3. add objects
     // 4. add translation and rotation operations to place objects
     //------------------------------------------------
+    pScene->SetBackgroundColor(RGBR_f(0.7, 0.7, 0.7, 0.7));
+    pScene->AddLight(Light(STVector3(0, 0, 50), RGBR_f(1.0, 1.0, 1.0, 1.0)));
+    pScene->AddSurface(new Sphere());
+    pScene->AddSurface(new Triangle());
+
 
     //------------------------------------------------
 
@@ -256,8 +261,6 @@ int main(int argc, char *argv[])
             break;
 
     }
-
-
     //------------------------------------------------
 
     // Initializes the scene
@@ -266,6 +269,8 @@ int main(int argc, char *argv[])
     // run the ray tracer
     pRayTracer->Run(pScene, "output.png", mode);
 
+    delete pScene;
+    delete pRayTracer;
 
     return 0;
 }

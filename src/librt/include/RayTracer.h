@@ -16,6 +16,8 @@
 #include "Scene.h"
 #include "RGBR_f.h"
 
+#define MULTIPLE_INTERSECTION 1
+
 class Shader;
 
 class RayTracer
@@ -38,7 +40,9 @@ private:
 
     bool                        MinimumColor                                    (RGBR_f color);
 
-    RGBR_f                      Shade                                           (Scene *pScene, Intersection *pIntersection);
+    RGBR_f                      Shade                                           (Ray ray, Scene *pScene, Intersection *pIntersection);
+
+    STColor4ub                  ColorToPixel                                    (RGBR_f color);
 
 };
 
