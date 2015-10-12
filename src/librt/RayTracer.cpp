@@ -81,7 +81,6 @@ void RayTracer::Run(Scene *pScene, std::string fName, RenderMode mode)
             // one intersection - compute shading
             else if (numberOfIntersections == 1)
             {
-                // color = RGBR_f(1.0, 0.0, 0.0, 1.0);
                 color = Shade(ray, pScene, intersection, 0);
                 // if (!MinimumColor(color)) {
                     // color = bkground;
@@ -131,30 +130,31 @@ RGBR_f RayTracer::Shade(Ray ray, Scene *pScene, Intersection &intersection, int 
     //    about your scene
     // 3. Remember to stop the recursion
     //------------------------------------------------
+    // std::cout << intersection.point.x << " " << intersection.point.y << " " << intersection.point.z << std::endl;
     STVector3 normal = intersection.normal;
-    STVector3 directionOfReflect = (STVector3::Dot(normal,(STVector3::Dot(normal, ray.Direction()))) * 2.0f) -
+    STVector3 directionOfReflect = (STVector3::Dot(normal,(STVector3::Dot(normal, -ray.Direction()))) * 2.0f) +
                                     ray.Direction();
     STVector3 directionOfLight = pScene->GetLightDirection(intersection);
 
     color = pShader->Run(pScene->GetCamera(), intersection, directionOfLight);
 
-    // if (depth >= m_maxLevel)
-    // {
-    //     return RGBR_f(0.0, 0.0, 0.0, 1.0);
-    // }
-    // else
-    // {
-    //     Intersection ins;
-    //     Ray reflectRay;
-    //     reflectRay.SetOrigin(intersection.point);
-    //     reflectRay.SetDirection(directionOfReflect);
-    //     int numberOfIntersections = pScene->FindClosestIntersection(reflectRay, ins);
-    //     if (numberOfIntersections == 1)
-    //     {
-    //         color += Shade(reflectRay, pScene, ins, depth + 1);
-    //     }
-    // }
-
+    if (depth < m_maxLevel)
+    {
+        Intersection ins;
+        Ray reflectRay;
+        reflectRay.SetOrigin(intersection.point + directionOfReflect);
+        reflectRay.SetDirection(directionOfReflect);
+        int numberOfIntersections = pScene->FindClosestIntersection(reflectRay, ins);
+        if (numberOfIntersections == 1)
+        {
+            RGBR_f reColor = Shade(reflectRay, pScene, ins, depth + 1);
+            float d = 0.1f;
+            float new_r = std::min(1.0f, d * reColor.r + color.r);
+            float new_g = std::min(1.0f, d * reColor.g + color.g);
+            float new_b = std::min(1.0f, d * reColor.b + color.b);
+            color = RGBR_f(new_r, new_g, new_b, color.a);
+        }
+    }
     //-----------------------------------------------
 
     return(color);

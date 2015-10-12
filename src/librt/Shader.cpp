@@ -72,10 +72,6 @@ RGBR_f Shader::Lambertian(Intersection &intersection, STVector3 &lightDirection)
     lightDirection.Normalize();
     float Kd = 0.7;
     float diffuse = Kd * std::max(0.0f, STVector3::Dot(normal, lightDirection));
-    // std::cout << STVector3::Dot(normal, -directionOfLight) << std::endl;
-    // std::cout << intersection.point.x << " " << intersection.point.y << " " << intersection.point.z << std::endl;
-    // std::cout << normal.x << " " << normal.y << " " << normal.z << std::endl;
-    // std::cout << lightDirection.x << " " << lightDirection.y << " " << lightDirection.z << std::endl;
     Surface *intersectSurface = intersection.surface;
     assert(intersectSurface);
 
@@ -100,28 +96,34 @@ RGBR_f Shader::Phong(Camera *camera, Intersection &intersection, STVector3 &ligh
     //    your surface objects as they are passed in with the pIntersection
     //---------------------------------------------------------
     //---------------------------------------------------------
+
     STVector3 normal = intersection.normal;
     normal.Normalize();
-    STVector3 directionOfLight = lightDirection;
-    directionOfLight.Normalize();
-    double Kd = 0.3;
-    double diffuse = STVector3::Dot(normal, directionOfLight);
+    lightDirection.Normalize();
+
+    float Ka = 0.15;
+
+    float Kd = 0.7;
+    float diffuse = std::max(0.0f, STVector3::Dot(normal, lightDirection));
 
     STVector3 directionOfView = camera->Position() - intersection.point; //Eye direction
     directionOfView.Normalize();
-    STVector3 directionOfReflect = (STVector3::Dot(normal,(STVector3::Dot(normal, directionOfLight))) * 2.0f)
-                                 - directionOfLight;                   //calculate reflect
-    directionOfReflect.Normalize();
+    STVector3 halfVector = directionOfView + lightDirection;
+    halfVector.Normalize();
 
-    double Ks = 0.7;
-    double specular= pow(STVector3::Dot(directionOfView, directionOfReflect), 10);
+    float Ks = 1.0;
+    // if (STVector3::Dot(directionOfView, directionOfReflect) > 0)
+    float specular= powf(std::max(0.0f, STVector3::Dot(normal, halfVector)), 30);
 
     Surface *intersectSurface = intersection.surface;
     assert(intersectSurface);
 
-    color = RGBR_f(intersectSurface->GetColor().r * (Kd * diffuse + Ks * specular),
-                   intersectSurface->GetColor().g * (Kd * diffuse + Ks * specular),
-                   intersectSurface->GetColor().b * (Kd * diffuse + Ks * specular),
+    float r = intersectSurface->GetColor().r * (Ka + Kd * diffuse + Ks * specular);
+    float g = intersectSurface->GetColor().g * (Ka + Kd * diffuse + Ks * specular);
+    float b = intersectSurface->GetColor().b * (Ka + Kd * diffuse + Ks * specular);
+    color = RGBR_f(std::min(1.0f, r),
+                   std::min(1.0f, g),
+                   std::min(1.0f, b),
                    intersectSurface->GetColor().a);
     return(color);
 }

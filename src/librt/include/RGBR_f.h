@@ -25,7 +25,6 @@ public:
         r += rhs.r;
         g += rhs.g;
         b += rhs.b;
-        a += rhs.a;
         return *this;
     }
 

@@ -39,7 +39,7 @@ private:
 
 
     // linear systems
-    bool                        IntersectionSolver              (Ray ray, STVector3 A, STVector3 B, STVector3 C, double u, double v, double w);
+    bool                        IntersectionSolver              (Ray ray, STVector3 A, STVector3 B, STVector3 C, double &u, double &v, double &w);
 
     STVector3                   ComputeNormalVector             (void);
 

@@ -36,7 +36,7 @@ Triangle::~Triangle()
 // Updates the variables u, v, and w with the solution if found
 // Returns true if found, otherwise false
 //-----------------------------------------------------------------
-bool Triangle::IntersectionSolver(Ray ray, STVector3 A, STVector3 B, STVector3 C, double u, double v, double w)
+bool Triangle::IntersectionSolver(Ray ray, STVector3 A, STVector3 B, STVector3 C, double &u, double &v, double &w)
 {
     bool bFoundSolution = false;
     // TO DO: Proj2 raytracer
@@ -90,23 +90,21 @@ bool Triangle::FindIntersection (Ray ray, Intersection &intersection)
     double w = 0.0;
     if (IntersectionSolver(ray, m_a, m_b, m_c, u, v, w))
     {
-        // std::cout << u << " " << v << " " << w << std::endl;
-        // if (v < EPSILON || v > 1)
-        // {
-        //     return bFound;
-        // }
-        // if (u < EPSILON || u > 1 - v)
-        // {
-        //     return bFound;
-        // }
-        // if (w < EPSILON)
-        // {
-        //     return bFound;
-        // }
-        // std::cout << u << " " << v << " " << w << std::endl;
+        if (v < EPSILON || v > 1)
+        {
+            return bFound;
+        }
+        if (u < EPSILON || u > 1 - v)
+        {
+            return bFound;
+        }
+        if (w < EPSILON)
+        {
+            return bFound;
+        }
         bFound = true;
         STVector3 point = origin + w * direction;
-        STVector3 normal = STVector3::Cross(m_a - m_b, m_a - m_c);
+        STVector3 normal = -STVector3::Cross(m_a - m_b, m_a - m_c);
         intersection.normal = normal;
         intersection.point = point;
         intersection.distanceSqu = STVector3::Dot(point - origin, point - origin);

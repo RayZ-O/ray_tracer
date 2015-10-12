@@ -27,7 +27,7 @@ LinearSolver::~LinearSolver()
 
 
 //----------------------------------------------------------------------
-// Returns true if finds the solution, u, v, and w for a set of linear 
+// Returns true if finds the solution, u, v, and w for a set of linear
 // equations:
 //----------------------------------------------------------------------
 bool LinearSolver::Run( double D, double E, double F, double G,
@@ -55,10 +55,10 @@ bool LinearSolver::Run( double D, double E, double F, double G,
                 w = -(D*u + E*v + G) / F;
 
                 // found solution
-                return true;      
+                return true;
             }
         }
     }
 
-    return (false); 
+    return (false);
 }

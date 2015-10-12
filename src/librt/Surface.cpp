@@ -29,7 +29,7 @@ RGBR_f Surface::GetColor() {
 
 
 // Returns the closest intersection point
-int Surface::FindClosestIntersection(Intersection *pIntersection)
+int Surface::FindClosestIntersection(Intersection &intersection)
 {
     // TO DO: Proj2 raytracer
     // CAP5705 - Find the closest intersection.
@@ -43,12 +43,12 @@ int Surface::FindClosestIntersection(Intersection *pIntersection)
     if (m_intersections.empty()) {
         return 0;
     } else {
-        pIntersection = &m_intersections[0];
+        intersection = m_intersections[0];
         double min = m_intersections[0].distanceSqu;
         int closeNumber = 0;
-        for (auto ins : m_intersections) {
+        for (auto &ins : m_intersections) {
             if (ins.distanceSqu < min) {
-                pIntersection = &ins;
+                intersection = ins;
             }
             if (abs(ins.distanceSqu - min) < EPSILON) {
                 closeNumber++;

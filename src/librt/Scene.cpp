@@ -72,7 +72,6 @@ STVector3 Scene::GetLightDirection(Intersection &intersection)
     //---------------------------------------------------------
     //---------------------------------------------------------
     Light light = m_lights.back();
-    // std::cout << light.GetPosition().x << " " << light.GetPosition().y << " " << light.GetPosition().z << std::endl;
     STVector3 lightPosition = light.GetPosition();
     lightDirection = lightPosition - intersection.point;
     return(lightDirection);
@@ -104,13 +103,15 @@ int Scene::SelectClosest(IntersectionList &intersectionList, Intersection &inter
         double min = intersectionList[0].distanceSqu;
         for (int i = 0; i < intersectionList.size(); i++)
         {
-            if (intersectionList[i].distanceSqu < min)
-            {
-                intersection = intersectionList[i];
-            }
             if (abs(intersectionList[i].distanceSqu - min) < EPSILON)
             {
                 numPoints++;
+            }
+            if (intersectionList[i].distanceSqu < min)
+            {
+                intersection = intersectionList[i];
+                min = intersectionList[i].distanceSqu;
+                numPoints = 1;
             }
         }
         // std::cout << pIntersection->surface << std::endl;
