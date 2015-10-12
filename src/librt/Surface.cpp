@@ -23,6 +23,10 @@ Surface::~Surface()
 
 }
 
+RGBR_f Surface::GetColor() {
+    return m_color;
+}
+
 
 // Returns the closest intersection point
 int Surface::FindClosestIntersection(Intersection *pIntersection)
@@ -50,7 +54,7 @@ int Surface::FindClosestIntersection(Intersection *pIntersection)
                 closeNumber++;
             }
         }
-        return closeNumber;  // TO DO number of close intersection
+        return closeNumber;
     }
 }
 

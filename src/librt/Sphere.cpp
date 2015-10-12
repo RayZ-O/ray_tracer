@@ -16,6 +16,13 @@ Sphere::Sphere(void)
       m_center = STVector3(0,0,0);
 }
 
+Sphere::Sphere(float radius, STVector3 center, RGBR_f color)
+    : m_radius(radius)
+{
+    m_center = center;
+    m_color = color;
+}
+
 
 // clean up here
 Sphere::~Sphere()
@@ -29,7 +36,7 @@ Sphere::~Sphere()
 // if it an intersection exist, return true; otherwise false
 // return the intersection point information in pIntersection
 //-----------------------------------------------------------------------------
-bool Sphere::FindIntersection(Ray ray, Intersection *pIntersection)
+bool Sphere::FindIntersection(Ray ray, Intersection &intersection)
 {
 
     bool bFound = false;
@@ -49,47 +56,47 @@ bool Sphere::FindIntersection(Ray ray, Intersection *pIntersection)
     STVector3 origin = ray.Origin();
     STVector3 direction = ray.Direction();
     //ori.x＊（direc.x-m_center.x)+ori.y＊（direc.y-m_center.y)+ori.z＊（direc.z-m_center.z);
-    STVector3 result;
     STVector3 Distance_EtoC = origin - m_center;
     double t1;
     double distance1;
     STVector3 point1;
     STVector3 normal1;
-    float delta = result.Dot(direction, Distance_EtoC) * result.Dot(direction, Distance_EtoC) -
-                  result.Dot(direction, direction) * (result.Dot(Distance_EtoC, Distance_EtoC) - m_radius * m_radius);
+    float delta = STVector3::Dot(direction, Distance_EtoC) * STVector3::Dot(direction, Distance_EtoC) -
+                  STVector3::Dot(direction, direction) * (STVector3::Dot(Distance_EtoC, Distance_EtoC) - m_radius * m_radius);
     if (delta < 0)
         return (bFound);
     else
     {
-        if (delta == 0)
+        if (delta < EPSILON)
         {
-            t1 = result.Dot(-direction, Distance_EtoC) / result.Dot(direction,direction);
+            t1 = STVector3::Dot(-direction, Distance_EtoC) / STVector3::Dot(direction,direction);
             point1 = origin + t1 * direction;
             normal1 = (point1 - m_center) / m_radius;
-            distance1 = result.Dot(point1 - origin, point1 - origin);
-            //distance = t * t * result.Dot(direction, direction);
-            pIntersection -> point = point1;
-            pIntersection -> normal = normal1;
-            pIntersection -> distanceSqu = distance1;
+            distance1 = STVector3::Dot(point1 - origin, point1 - origin);
+            //distance = t * t * STVector3::Dot(direction, direction);
+            intersection.point = point1;
+            intersection.normal = normal1;
+            intersection.distanceSqu = distance1;
+            intersection.surface = this;
             bFound = true;
         }
         else
         {
-            t1 = result.Dot(-direction, Distance_EtoC) / result.Dot(direction,direction) - sqrt(delta);
-         //  t2 = result.Dot(-direction, Distance_EtoC) / result.Dot(direction,direction) + sqrt(delta);
+            t1 = (STVector3::Dot(-direction, Distance_EtoC) - sqrt(delta)) / STVector3::Dot(direction,direction) ;
+         //  t2 = STVector3::Dot(-direction, Distance_EtoC) / STVector3::Dot(direction,direction) + sqrt(delta);
             point1 = origin + t1 * direction;
          // point2 = origin + t2 * direction;
             normal1 = (point1 - m_center) / m_radius;
          // normal2 = (point2 - m_center) / m_radius;
-            distance1 = result.Dot(point1 - origin, point1 - origin);
-         // distance1 = result.Dot(point1 - origin, point1 - origin);
-            pIntersection -> point = point1;
-            pIntersection -> normal = normal1;
-            pIntersection -> distanceSqu = distance1;
-            pIntersection -> surface = this;
+            distance1 = STVector3::Dot(point1 - origin, point1 - origin);
+         // distance1 = STVector3::Dot(point1 - origin, point1 - origin);
+            intersection.point = point1;
+            intersection.normal = normal1;
+            intersection.distanceSqu = distance1;
+            intersection.surface = this;
             bFound = true;
         }
-        m_intersections.push_back(*pIntersection);
+        m_intersections.push_back(intersection);
     }
    return(bFound);
 }

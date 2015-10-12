@@ -40,7 +40,7 @@ private:
 
     bool                        MinimumColor                                    (RGBR_f color);
 
-    RGBR_f                      Shade                                           (Ray ray, Scene *pScene, Intersection *pIntersection);
+    RGBR_f                      Shade                                           (Ray ray, Scene *pScene, Intersection &intersection, int depth);
 
     STColor4ub                  ColorToPixel                                    (RGBR_f color);
 

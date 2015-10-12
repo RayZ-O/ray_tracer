@@ -16,6 +16,7 @@
 #include "STVector3.h"
 #include "defs.h"
 #include "Camera.h"
+#include "Surface.h"
 
 
 class Intersection;
@@ -30,7 +31,7 @@ public:
 
     void                                SetMode                         (RenderMode mode);
 
-    RGBR_f                               Run                             (Camera *camera, Intersection *pIntersection, STVector3 *lightDirection);
+    RGBR_f                               Run                             (Camera *camera, Intersection &intersection, STVector3 &lightDirection);
 
     // TO DO: Proj2 raytracer
     // CAP5705 - Add shading functions for special effects.
@@ -44,8 +45,8 @@ private:
 
     RenderMode                          m_mode;
 
-    RGBR_f                           Lambertian                      (Intersection *pIntersection, STVector3 *lightDirection);
-    RGBR_f                           Phong                           (Camera *camera, Intersection *pIntersection, STVector3 *lightDirection);
+    RGBR_f                           Lambertian                      (Intersection &intersection, STVector3 &lightDirection);
+    RGBR_f                           Phong                           (Camera *camera, Intersection &intersection, STVector3 &lightDirection);
 
 };
 

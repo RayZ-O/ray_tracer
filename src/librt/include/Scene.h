@@ -23,18 +23,18 @@ public:
                                 ~Scene                                      (void);
 
     void                        SetBackgroundColor                          (RGBR_f color);
-    RGBR_f                   GetBackgroundColor                             (void);
+    RGBR_f                      GetBackgroundColor                             (void);
 
-    void                        AddLight                                    (Light lightin);
+    void                        AddLight                                         (Light lightin);
     void                        AddSurface                                  (Surface *pSurfacein);
 
 
     Camera                      *GetCamera                                  (void);
-    STVector3                    GetLightDirection                          (Intersection *pIntersection);
+    STVector3                    GetLightDirection                          (Intersection &intersection);
 
-    int                         FindIntersection                            (Ray ray, Intersection *pIntersection, bool bAny);
-    int                         FindClosestIntersection                     (Ray ray, Intersection *pIntersection);
-    int                         SelectClosest                               (IntersectionList *pIntersectionList, Intersection *pIntersection);
+    int                         FindIntersection                            (Ray ray, Intersection &intersection, bool bAny);
+    int                         FindClosestIntersection                     (Ray ray, Intersection &intersection);
+    int                         SelectClosest                               (IntersectionList &intersectionList, Intersection &intersection);
 
 
 private:

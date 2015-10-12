@@ -22,9 +22,10 @@ class Triangle : public Surface
 
 public:
                                 Triangle                        (void);
+                                Triangle                        (STVector3 A, STVector3 B, STVector3 C, RGBR_f color);
                                 ~Triangle                       (void);
 
-    bool                        FindIntersection                (Ray ray, Intersection *pIntersection);
+    bool                        FindIntersection                (Ray ray, Intersection &intersection);
 
 
 

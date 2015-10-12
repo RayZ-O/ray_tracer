@@ -20,9 +20,10 @@ class Sphere  : public Surface
 
 public:
                                 Sphere                              (void);
+                                Sphere                              (float radius, STVector3 center, RGBR_f color);
                                 ~Sphere                             (void);
 
-    bool                FindIntersection                    (Ray ray, Intersection *pIntersection);
+    bool                FindIntersection                    (Ray ray, Intersection &intersection);
 
 private:
 

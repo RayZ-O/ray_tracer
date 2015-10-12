@@ -26,19 +26,19 @@ void Shader::SetMode(RenderMode mode)
 
 
 // Runs the shader according to the specified render mode
-RGBR_f Shader::Run(Camera *camera, Intersection *pIntersection, STVector3 *lightDirection)
+RGBR_f Shader::Run(Camera *camera, Intersection &intersection, STVector3 &lightDirection)
 {
     RGBR_f color;
 
     switch (m_mode) {
         case LAMBERTIAN:
-            color = Lambertian(pIntersection, lightDirection);
+            color = Lambertian(intersection, lightDirection);
             break;
         case PHONG:
-            color = Phong(camera, pIntersection, lightDirection);
+            color = Phong(camera, intersection, lightDirection);
             break;
         default:
-            color = Lambertian(pIntersection, lightDirection);
+            color = Lambertian(intersection, lightDirection);
             break;
         }
 
@@ -54,12 +54,10 @@ RGBR_f Shader::Run(Camera *camera, Intersection *pIntersection, STVector3 *light
 
 
 // Implements diffuse shading using the lambertian lighting model
-RGBR_f Shader::Lambertian(Intersection *pIntersection, STVector3 *lightDirection)
+RGBR_f Shader::Lambertian(Intersection &intersection, STVector3 &lightDirection)
 {
-    assert(pIntersection);
-    assert(lightDirection);
 
-    RGBR_f color(0.5f, 0.5f, 0.0f, 0.7f);
+    RGBR_f color;
 
     // TO DO: Proj2 raytracer
     // CAP5705 - Add shading lambertian shading.
@@ -69,27 +67,31 @@ RGBR_f Shader::Lambertian(Intersection *pIntersection, STVector3 *lightDirection
     //---------------------------------------------------------
 
     //---------------------------------------------------------
-    STVector3 normal = pIntersection->normal;
+    STVector3 normal = intersection.normal;
     normal.Normalize();
-    STVector3 directionOfLight = *lightDirection;
-    directionOfLight.Normalize();
-    double Kd = 0.3;
-    double factor = Kd * STVector3::Dot(normal, directionOfLight);
-    color.r *= factor;
-    color.g *= factor;
-    color.b *= factor;
+    lightDirection.Normalize();
+    float Kd = 0.7;
+    float diffuse = Kd * std::max(0.0f, STVector3::Dot(normal, lightDirection));
+    // std::cout << STVector3::Dot(normal, -directionOfLight) << std::endl;
+    // std::cout << intersection.point.x << " " << intersection.point.y << " " << intersection.point.z << std::endl;
+    // std::cout << normal.x << " " << normal.y << " " << normal.z << std::endl;
+    // std::cout << lightDirection.x << " " << lightDirection.y << " " << lightDirection.z << std::endl;
+    Surface *intersectSurface = intersection.surface;
+    assert(intersectSurface);
+
+    color = RGBR_f(intersectSurface->GetColor().r * diffuse,
+                   intersectSurface->GetColor().g * diffuse,
+                   intersectSurface->GetColor().b * diffuse,
+                   intersectSurface->GetColor().a);
     return(color);
 }
 
 
 // Implements diffuse shading using the lambertian lighting model
-RGBR_f Shader::Phong(Camera *camera, Intersection *pIntersection, STVector3 *lightDirection)
+RGBR_f Shader::Phong(Camera *camera, Intersection &intersection, STVector3 &lightDirection)
 {
 
-    assert(pIntersection);
-    assert(lightDirection);
-
-    RGBR_f color(0.5f, 0.5f, 0.0f, 0.7f);
+    RGBR_f color;
 
     // TO DO: Proj2 raytracer
     // CAP5705 - Add Phong shading.
@@ -98,26 +100,29 @@ RGBR_f Shader::Phong(Camera *camera, Intersection *pIntersection, STVector3 *lig
     //    your surface objects as they are passed in with the pIntersection
     //---------------------------------------------------------
     //---------------------------------------------------------
-    STVector3 normal = pIntersection->normal;
+    STVector3 normal = intersection.normal;
     normal.Normalize();
-    STVector3 directionOfLight = *lightDirection;
+    STVector3 directionOfLight = lightDirection;
     directionOfLight.Normalize();
     double Kd = 0.3;
-    double diffuse = Kd * STVector3::Dot(normal, directionOfLight);
+    double diffuse = STVector3::Dot(normal, directionOfLight);
 
-    STVector3 directionOfView = camera->Position() - pIntersection->point; //Eye direction
+    STVector3 directionOfView = camera->Position() - intersection.point; //Eye direction
     directionOfView.Normalize();
     STVector3 directionOfReflect = (STVector3::Dot(normal,(STVector3::Dot(normal, directionOfLight))) * 2.0f)
                                  - directionOfLight;                   //calculate reflect
     directionOfReflect.Normalize();
 
     double Ks = 0.7;
-    double specular= Ks * pow(STVector3::Dot(directionOfView, directionOfReflect), 10);
+    double specular= pow(STVector3::Dot(directionOfView, directionOfReflect), 10);
 
-    color.r *= diffuse * specular;
-    color.g *= diffuse * specular;
-    color.b *= diffuse * specular;
+    Surface *intersectSurface = intersection.surface;
+    assert(intersectSurface);
 
+    color = RGBR_f(intersectSurface->GetColor().r * (Kd * diffuse + Ks * specular),
+                   intersectSurface->GetColor().g * (Kd * diffuse + Ks * specular),
+                   intersectSurface->GetColor().b * (Kd * diffuse + Ks * specular),
+                   intersectSurface->GetColor().a);
     return(color);
 }
 

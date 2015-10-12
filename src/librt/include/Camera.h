@@ -16,6 +16,8 @@ public:
                             Camera(void);
                             ~Camera(void);
 
+    void                    SetPosition                                 (STVector3 pos);
+
     void                    Reset                                       (void);
     void                    ResetUp                                     (void);
     void                    SetUpAndRight                               (void);

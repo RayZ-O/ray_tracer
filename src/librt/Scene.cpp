@@ -62,7 +62,7 @@ Camera *Scene::GetCamera(void)
 
 // computes the direction of the light in the scene
 // and returns it
-STVector3 Scene::GetLightDirection(Intersection *pIntersection)
+STVector3 Scene::GetLightDirection(Intersection &intersection)
 {
     STVector3 lightDirection;
 
@@ -71,17 +71,17 @@ STVector3 Scene::GetLightDirection(Intersection *pIntersection)
     // 1. Return the direction of the light in the scene
     //---------------------------------------------------------
     //---------------------------------------------------------
-    STVector3 point = pIntersection->point;
     Light light = m_lights.back();
+    // std::cout << light.GetPosition().x << " " << light.GetPosition().y << " " << light.GetPosition().z << std::endl;
     STVector3 lightPosition = light.GetPosition();
-    lightDirection = lightPosition - point;
+    lightDirection = lightPosition - intersection.point;
     return(lightDirection);
 }
 
 
 // Select the closest intersection and return the number of points
 // very close to this one
-int Scene::SelectClosest(IntersectionList *pIntersectionList, Intersection *pIntersection)
+int Scene::SelectClosest(IntersectionList &intersectionList, Intersection &intersection)
 {
 
     int numPoints = 0;
@@ -94,26 +94,27 @@ int Scene::SelectClosest(IntersectionList *pIntersectionList, Intersection *pInt
 
     //---------------------------------------------------------
 
-    if (pIntersectionList->empty())
+    if (intersectionList.empty())
     {
         return numPoints;
     }
     else
     {
-        pIntersection = &((*pIntersectionList)[0]);
-        double min = (*pIntersectionList)[0].distanceSqu;
-        for (auto ins : *pIntersectionList)
+        intersection = intersectionList[0];
+        double min = intersectionList[0].distanceSqu;
+        for (int i = 0; i < intersectionList.size(); i++)
         {
-            if (ins.distanceSqu < min)
+            if (intersectionList[i].distanceSqu < min)
             {
-                pIntersection = &ins;
+                intersection = intersectionList[i];
             }
-            if (abs(ins.distanceSqu - min) < EPSILON)
+            if (abs(intersectionList[i].distanceSqu - min) < EPSILON)
             {
                 numPoints++;
             }
         }
-        return numPoints;  // TO DO number of close intersection
+        // std::cout << pIntersection->surface << std::endl;
+        return numPoints;
     }
 }
 
@@ -122,10 +123,10 @@ int Scene::SelectClosest(IntersectionList *pIntersectionList, Intersection *pInt
 // Find the intersection of the ray with objects in the scene
 // Return the closest intersection
 //-----------------------------------------------------
-int Scene::FindClosestIntersection(Ray ray, Intersection *pIntersection)
+int Scene::FindClosestIntersection(Ray ray, Intersection &intersection)
 {
     int numPoints = 0;
-    numPoints = FindIntersection(ray, pIntersection, false);
+    numPoints = FindIntersection(ray, intersection, false);
     return(numPoints);
 }
 
@@ -139,7 +140,7 @@ int Scene::FindClosestIntersection(Ray ray, Intersection *pIntersection)
 //   - if bAny is false, return the closest intersection
 //
 //-----------------------------------------------------
-int Scene::FindIntersection(Ray ray, Intersection *pIntersection, bool bAny)
+int Scene::FindIntersection(Ray ray, Intersection &intersection, bool bAny)
 {
     bool bFound = false;
     int numPoints = 0;
@@ -160,33 +161,26 @@ int Scene::FindIntersection(Ray ray, Intersection *pIntersection, bool bAny)
         //---------------------------------------------------------
         if (bAny)
         {
-            for(iter = m_surfaceList.begin(); iter != end; iter++)
+            if ((*iter)->FindIntersection(ray, intersection))
             {
-                if ((*iter)->FindIntersection(ray, pIntersection))
-                {
-                    return 1;
-                }
+                return 1;
             }
         }
         else
         {
-            // TO DO: Proj2 raytracer
-            // CAP5705 - Find Intersections.
-            // 1. Find the closest intersection along the ray in the list
-            //---------------------------------------------------------
-            //---------------------------------------------------------
-            for(iter = m_surfaceList.begin(); iter != end; iter++)
+            Intersection ins;
+            if ((*iter)->FindIntersection(ray, ins))
             {
-                Intersection ins;
-                if ((*iter)->FindIntersection(ray, &ins))
-                {
-                    intersectionList.push_back(ins);
-                }
+                intersectionList.push_back(ins);
             }
-            return SelectClosest(&intersectionList, pIntersection);
         }
     }
-
+    // TO DO: Proj2 raytracer
+    // CAP5705 - Find Intersections.
+    // 1. Find the closest intersection along the ray in the list
+    //---------------------------------------------------------
+    //---------------------------------------------------------
+    numPoints = SelectClosest(intersectionList, intersection);
     return(numPoints);
 }
 

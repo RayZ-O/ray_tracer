@@ -23,6 +23,10 @@ Camera::~Camera()
 
 }
 
+void Camera::SetPosition(STVector3 pos) {
+    m_Position = pos;
+}
+
 
 void Camera::SetUpAndRight(void)
 {

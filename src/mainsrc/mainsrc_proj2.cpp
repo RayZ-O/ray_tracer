@@ -85,10 +85,10 @@ void Setup(void)
     // 3. add objects
     // 4. add translation and rotation operations to place objects
     //------------------------------------------------
-    pScene->SetBackgroundColor(RGBR_f(0.7, 0.7, 0.7, 0.7));
-    pScene->AddLight(Light(STVector3(0, 0, 50), RGBR_f(1.0, 1.0, 1.0, 1.0)));
-    pScene->AddSurface(new Sphere());
-    pScene->AddSurface(new Triangle());
+    pScene->SetBackgroundColor(RGBR_f(0.5, 0.5, 0.5, 1.0));
+    pScene->AddLight(Light(STVector3(1000, 1000, 1000), RGBR_f(1.0, 0.0, 0.0, 1.0)));
+    // pScene->AddSurface(new Sphere(160, STVector3(0, 0, -400), RGBR_f(1.0, 0.0, 0.0, 1.0)));
+    pScene->AddSurface(new Triangle(STVector3(160, 0, -300), STVector3(0, 160, -300), STVector3(160, 160, -300), RGBR_f(0.0, 0.0, 1.0, 1.0)));
 
 
     //------------------------------------------------
@@ -269,6 +269,7 @@ int main(int argc, char *argv[])
     // run the ray tracer
     pRayTracer->Run(pScene, "output.png", mode);
 
+    // clean up
     delete pScene;
     delete pRayTracer;
 

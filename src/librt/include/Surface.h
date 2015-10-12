@@ -23,8 +23,9 @@ class Surface
                                     Surface                             (void);
                                     ~Surface                            (void);
 
-    virtual bool                    FindIntersection                    (Ray ray, Intersection *pIntersection){ return(false);}
-    int                             FindClosestIntersection             (Intersection *pIntersection);
+    virtual bool                    FindIntersection                    (Ray ray, Intersection &intersection){ return(false);}
+    int                             FindClosestIntersection             (Intersection &intersection);
+    RGBR_f                          GetColor                            ();
 
 protected:
 
@@ -38,6 +39,8 @@ protected:
     IntersectionList                m_intersections;
 
     STVector3                       m_center;
+
+    RGBR_f                          m_color;
 
 
 };

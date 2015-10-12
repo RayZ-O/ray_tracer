@@ -70,18 +70,25 @@ void RayTracer::Run(Scene *pScene, std::string fName, RenderMode mode)
     {
         for (int j = 0; j < height; j++)
         {
-            Intersection ins;
-            ray.SetDirection(STVector3(i - width / 2, j - height / 2, 0) - cameraPosition);
-            int numberOfIntersections = pScene->FindClosestIntersection(ray, &ins);
+            Intersection intersection;
+            ray.SetDirection(STVector3(i - width / 2, j - height / 2, -200) - cameraPosition);
+            int numberOfIntersections = pScene->FindClosestIntersection(ray, intersection);
+            // more than one intersection, throw an exception
             if (numberOfIntersections > 1)
             {
                 throw MULTIPLE_INTERSECTION;
             }
+            // one intersection - compute shading
             else if (numberOfIntersections == 1)
             {
-                color = Shade(ray, pScene, &ins);
+                // color = RGBR_f(1.0, 0.0, 0.0, 1.0);
+                color = Shade(ray, pScene, intersection, 0);
+                // if (!MinimumColor(color)) {
+                    // color = bkground;
+                // }
                 pImg->SetPixel(i, j, ColorToPixel(color));
             }
+            // no interection - shade to the background color
             else
             {
                 pImg->SetPixel(i, j, ColorToPixel(bkground));
@@ -112,7 +119,7 @@ STColor4ub RayTracer::ColorToPixel(RGBR_f color) {
 // This function computes all of the shading
 // Recursively bounce the ray from object to object
 // Use the Shader class to compute the final shading
-RGBR_f RayTracer::Shade(Ray ray, Scene *pScene, Intersection *pIntersection)
+RGBR_f RayTracer::Shade(Ray ray, Scene *pScene, Intersection &intersection, int depth)
 {
     RGBR_f color;
 
@@ -124,27 +131,29 @@ RGBR_f RayTracer::Shade(Ray ray, Scene *pScene, Intersection *pIntersection)
     //    about your scene
     // 3. Remember to stop the recursion
     //------------------------------------------------
-    STVector3 normal = pIntersection->normal;
+    STVector3 normal = intersection.normal;
+    STVector3 directionOfReflect = (STVector3::Dot(normal,(STVector3::Dot(normal, ray.Direction()))) * 2.0f) -
+                                    ray.Direction();
+    STVector3 directionOfLight = pScene->GetLightDirection(intersection);
 
-    STVector3 directionOfReflect = (STVector3::Dot(normal,(STVector3::Dot(normal, ray.Direction()))) * 2.0f) - ray.Direction();
-    STVector3 directionOfLight = pScene->GetLightDirection(pIntersection);
-    color = pShader->Run(pScene->GetCamera(), pIntersection, &directionOfLight);
-    if (!MinimumColor(color))
-    {
-        color = RGBR_f(m_intensityThreshold, m_intensityThreshold, m_intensityThreshold, 0.7f);
-    }
-    else
-    {
-        Intersection ins;
-        Ray reflectRay;
-        reflectRay.SetOrigin(pIntersection->point);
-        reflectRay.SetDirection(directionOfReflect);
-        int numberOfIntersections = pScene->FindClosestIntersection(reflectRay, &ins);
-        if (numberOfIntersections)
-        {
-            color += Shade(reflectRay, pScene, &ins);
-        }
-    }
+    color = pShader->Run(pScene->GetCamera(), intersection, directionOfLight);
+
+    // if (depth >= m_maxLevel)
+    // {
+    //     return RGBR_f(0.0, 0.0, 0.0, 1.0);
+    // }
+    // else
+    // {
+    //     Intersection ins;
+    //     Ray reflectRay;
+    //     reflectRay.SetOrigin(intersection.point);
+    //     reflectRay.SetDirection(directionOfReflect);
+    //     int numberOfIntersections = pScene->FindClosestIntersection(reflectRay, ins);
+    //     if (numberOfIntersections == 1)
+    //     {
+    //         color += Shade(reflectRay, pScene, ins, depth + 1);
+    //     }
+    // }
 
     //-----------------------------------------------
 
